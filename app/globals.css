@@ -1,26 +1,207 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ======================================================
+   BASE PREMIUM GLOBAL
+   ====================================================== */
+
+/* Suavização e reset moderno */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #F8F7FC; /* Offwhite lilás */
+  color: #1F1B2E;      /* Roxo grafite */
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Scrollbar elegante */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4d4d8;
+  border-radius: 20px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b8b8be;
+}
+
+/* ======================================================
+   INPUTS MODERNOS
+   ====================================================== */
+
+input,
+select,
+textarea {
+  border: 1px solid #E4E2EE;
+  border-radius: 0.55rem;
+  background: #ffffff;
+  padding: 0.55rem 0.75rem;
+  font-size: 15px;
+  transition: all .15s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #6D28D9;
+  box-shadow: 0 0 0 4px rgba(109, 40, 217, 0.18);
+  outline: none;
+}
+
+/* Desabilitado */
+input:disabled,
+select:disabled {
+  background: #f1f1f5;
+  cursor: not-allowed;
+}
+
+/* ======================================================
+   BOTÕES PREMIUM
+   ====================================================== */
+
+/* Primário — Roxo institucional */
+.btn-primary {
+  background-color: #6D28D9;
+  color: white;
+  border-radius: 0.55rem;
+  padding: 0.55rem 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color .15s ease, transform .06s ease;
+}
+.btn-primary:hover {
+  background-color: #5B21B6;
+}
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+/* Secundário — Borda suave */
+.btn-outline {
+  background: white;
+  border: 1px solid #D9D7E5;
+  border-radius: 0.55rem;
+  padding: 0.5rem 0.85rem;
+  color: #37344A;
+  cursor: pointer;
+  transition: border-color .15s ease;
+}
+.btn-outline:hover {
+  border-color: #6D28D9;
+}
+
+/* Botões desabilitados */
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ======================================================
+   CARDS & ELEMENTOS DE PAINEL
+   ====================================================== */
+
+.card {
+  background: white;
+  border-radius: 0.85rem;
+  border: 1px solid #ECEAF5;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(20, 20, 50, 0.05);
+  transition: box-shadow .15s ease, transform .12s ease;
+}
+.card:hover {
+  box-shadow: 0 3px 8px rgba(20, 20, 50, 0.08);
+}
+
+/* Títulos pequenos */
+.small-muted {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* ======================================================
+   MODAIS
+   ====================================================== */
+
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+/* ======================================================
+   ANIMAÇÕES
+   ====================================================== */
+
+.fade-in {
+  animation: fadeIn .22s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ======================================================
+   MOBILE RESPONSIVE
+   ====================================================== */
+
+/* espaço extra inferior por causa do bottom-nav */
+body main {
+  padding-bottom: 80px;
+}
+
+@media (min-width: 768px) {
+  body main {
+    padding-bottom: 0;
+  }
+}
+/* Garante que nada dentro do modal estoure horizontalmente */
+[data-radix-dialog-content] {
+  overflow-x: hidden !important;
+}
+
+/* Select do shadcn sempre respeita largura */
+[data-radix-select-trigger] {
+  max-width: 100% !important;
+}
+
+/* Container interno nunca ultrapassa */
+.modal-content-fix * {
+  max-width: 100% !important;
+  box-sizing: border-box;
+}
+/* Select do shadcn - corrigir fundo transparente */
+[data-radix-popper-content-wrapper] {
+  background: white !important;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb; /* slate-300 */
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+/* Impede qualquer elemento dentro do modal de causar scroll lateral */
+[data-radix-dialog-content] {
+  max-width: 90vw !important;
+  width: 100% !important;
+  overflow-x: hidden !important;
+}
+/* Itens internos nunca extrapolam */
+.modal-fix * {
+  box-sizing: border-box !important;
+  max-width: 100% !important;
 }
