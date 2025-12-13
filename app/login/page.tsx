@@ -1,30 +1,35 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { signInWithEmailAndPassword } from "firebase/auth"
-import { auth } from "@/src/lib/firebase"
-import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react";
+import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [senha, setSenha] = useState("")
-  const [erro, setErro] = useState("")
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [erro, setErro] = useState("");
+  const router = useRouter();
+
+  // 🔐 Se já estiver logado, NÃO deixa ficar no /login
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace("/dashboard");
+      }
+    });
+    return () => unsub();
+  }, [router]);
 
   async function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
-    setErro("")
+    e.preventDefault();
+    setErro("");
 
     try {
-      const userCred = await signInWithEmailAndPassword(auth, email, senha)
-      const token = await userCred.user.getIdToken()
-
-      // Criar cookie
-      document.cookie = `firebase-auth=${token}; path=/; max-age=86400`
-
-      router.push("/agenda")
-    } catch (error: any) {
-      setErro("Email ou senha inválidos")
+      await signInWithEmailAndPassword(auth, email, senha);
+      router.replace("/dashboard");
+    } catch {
+      setErro("Email ou senha inválidos");
     }
   }
 
@@ -62,5 +67,5 @@ export default function LoginPage() {
         </button>
       </form>
     </div>
-  )
+  );
 }

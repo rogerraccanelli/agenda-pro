@@ -3,17 +3,19 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  collection,
-  addDoc,
-  deleteDoc,
   doc,
-  onSnapshot,
+  getDoc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  collection,
   query,
   where,
   orderBy,
-  updateDoc,
-  getDoc,
+  onSnapshot
 } from "firebase/firestore";
+
 import { db, auth } from "@/lib/firebase";
 import dayjs from "dayjs";
 
@@ -355,31 +357,64 @@ export default function AgendaPage() {
     await excluirAgendamento(agendamentoEditando.id);
   }
 
-  // concluir atendimento -> busca preco do service, cria lancamento e marca concluido
+  // concluir atendimento → cria lançamento com data real, registra cliente e marca concluído
   async function concluirAtendimento() {
     if (!agendamentoEditando || !auth.currentUser) return;
     if (agendamentoEditando.concluido) return;
 
     const uid = auth.currentUser.uid;
-    if (!agendamentoEditando.servicoId) return alert("Serviço inválido.");
 
-    const servRef = doc(db, "users", uid, "services", agendamentoEditando.servicoId);
     try {
       setSaving(true);
+
+      // ===============================
+      // NORMALIZA DATA DO AGENDAMENTO
+      // ===============================
+      let dataAgendamento: Date;
+
+      const raw = agendamentoEditando.data as any;
+
+      if (raw instanceof Date) {
+        dataAgendamento = raw;
+      } else if (raw?.toDate && typeof raw.toDate === "function") {
+        dataAgendamento = raw.toDate();
+      } else if (typeof raw === "string") {
+        dataAgendamento = new Date(raw);
+      } else {
+        throw new Error("Formato de data inválido no agendamento");
+      }
+
+      if (isNaN(dataAgendamento.getTime())) {
+        throw new Error("Data do agendamento inválida");
+      }
+
+      // ===============================
+      // BUSCAR SERVIÇO
+      // ===============================
+      if (!agendamentoEditando.servicoId) {
+        setSaving(false);
+        return alert("Serviço não informado no agendamento.");
+      }
+
+      const servRef = doc(db, "users", uid, "services", agendamentoEditando.servicoId);
       const servSnap = await getDoc(servRef);
+
       if (!servSnap.exists()) {
         setSaving(false);
         return alert("Serviço não encontrado.");
       }
 
-      const servData = servSnap.data() as Service;
-      const preco = servData.preco;
+      const servData = servSnap.data();
+      const preco = Number(servData.preco);
+
       if (!preco || preco <= 0) {
         setSaving(false);
         return alert("Preço do serviço inválido.");
       }
 
-      // criar lançamento financeiro
+      // ===============================
+      // LANÇAMENTO FINANCEIRO
+      // ===============================
       await addDoc(collection(db, "users", uid, "finances"), {
         valor: preco,
         tipo: "entrada",
@@ -387,22 +422,71 @@ export default function AgendaPage() {
         appointmentId: agendamentoEditando.id,
         serviceId: agendamentoEditando.servicoId,
         clienteNome: agendamentoEditando.nome,
-        createdAt: new Date(),
+        data: dataAgendamento,
+        createdAt: dataAgendamento,
       });
+      // ===============================
+      // REGISTRO AUTOMÁTICO DO CLIENTE
+      // ===============================
+      const telefoneRaw = agendamentoEditando.telefone?.trim();
 
-      // marcar agendamento como concluido
-      await updateDoc(doc(db, "users", uid, "appointments", agendamentoEditando.id), {
-        concluido: true,
-        concluidoAt: new Date(),
-      });
+      if (!telefoneRaw) {
+        console.warn("Agendamento sem telefone, cliente não será criado", agendamentoEditando.id);
+      } else {
+        const telLimpo = telefoneRaw.replace(/\D/g, "");
+
+        if (telLimpo.length < 8) {
+          console.warn("Telefone inválido, cliente não será criado:", telLimpo);
+        } else {
+          const clienteRef = collection(db, "users", uid, "clientes");
+
+          const clienteQuery = query(
+            clienteRef,
+            where("telefone", "==", telLimpo)
+          );
+
+          const clienteSnap = await getDocs(clienteQuery);
+
+          if (clienteSnap.empty) {
+            await addDoc(clienteRef, {
+              nome: agendamentoEditando.nome,
+              telefone: telLimpo,
+              ultimoServico: servData.nome || servData.title || "",
+              ultimaVisita: dataAgendamento,
+              criadoEm: new Date(),
+            });
+          } else {
+            const cId = clienteSnap.docs[0].id;
+            await updateDoc(doc(db, "users", uid, "clientes", cId), {
+              ultimoServico: servData.nome || servData.title || "",
+              ultimaVisita: dataAgendamento,
+            });
+          }
+        }
+      }
+
+
+      // ===============================
+      // MARCAR COMO CONCLUÍDO
+      // ===============================
+      await updateDoc(
+        doc(db, "users", uid, "appointments", agendamentoEditando.id),
+        {
+          concluido: true,
+          concluidoAt: new Date(),
+        }
+      );
 
       fecharModal();
+
     } catch (err) {
       console.error(err);
       alert("Erro ao concluir atendimento.");
+    } finally {
       setSaving(false);
     }
   }
+
 
   function mudarDia(qtd: number) {
     setSelectedDay(dayjs(selectedDay).add(qtd, "day").format("YYYY-MM-DD"));

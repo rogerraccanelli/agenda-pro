@@ -59,11 +59,6 @@ export default function ConfigPage() {
   const [userName, setUserName] = useState<string | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  // helpers
-  function uidOrNull() {
-    return auth.currentUser?.uid ?? null;
-  }
-
   useEffect(() => {
     const unsub = auth.onAuthStateChanged((u) => {
       setUserLoaded(!!u);
@@ -75,17 +70,14 @@ export default function ConfigPage() {
     return () => unsub();
   }, []);
 
-  // load config (single document at users/{uid}/config/settings)
   useEffect(() => {
     if (!userLoaded || !auth.currentUser) return;
     setLoadingConfig(true);
     const uid = auth.currentUser.uid;
     const configRef = doc(db, "users", uid, "config", "settings");
 
-    // get once and subscribe to changes
     const unsub = onSnapshot(configRef, async (snap) => {
       if (!snap.exists()) {
-        // keep defaults
         setEstabelecimentoNome("");
         setHorarios({ abertura: "08:00", fechamento: "20:00" });
         setBloqueios([]);
@@ -110,7 +102,6 @@ export default function ConfigPage() {
     return () => unsub();
   }, [userLoaded]);
 
-  // add block (temporário in-memory until Save All)
   function abrirModalBloqueio() {
     setBlkData(dayjs().format("YYYY-MM-DD"));
     setBlkInicio("13:00");
@@ -154,7 +145,6 @@ export default function ConfigPage() {
     setBloqueios((prev) => prev.filter((b) => b.id !== id));
   }
 
-  // save all (write single doc)
   async function handleSalvarTodasConfiguracoes() {
     if (!auth.currentUser) return alert("Usuário não autenticado.");
     const uid = auth.currentUser.uid;
@@ -191,7 +181,7 @@ export default function ConfigPage() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-3 bg-white rounded-xl border shadow-sm">
+          <div className="p-3 bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-xl shadow-lg">
             <Building size={20} />
           </div>
           <div>
@@ -207,21 +197,18 @@ export default function ConfigPage() {
         </div>
       </div>
 
-      {/* Main grid: left column (config cards) / right column (user + help) */}
+      {/* Main grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left: settings area (cards stacked) */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Estabelecimento */}
-          <div className="bg-white rounded-2xl border p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white rounded-lg border">
-                  <Building size={18} />
-                </div>
-                <div>
-                  <h3 className="font-semibold">Estabelecimento</h3>
-                  <p className="text-xs text-slate-500">Nome exibido no app e relatórios.</p>
-                </div>
+
+          <div className="bg-white rounded-3xl border border-purple-200 p-5 shadow-md">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-purple-50 rounded-lg">
+                <Building size={18} className="text-purple-700" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Estabelecimento</h3>
+                <p className="text-xs text-slate-500">Nome exibido no app e relatórios.</p>
               </div>
             </div>
 
@@ -231,17 +218,14 @@ export default function ConfigPage() {
             </div>
           </div>
 
-          {/* Horários */}
-          <div className="bg-white rounded-2xl border p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-white rounded-lg border">
-                  <Clock size={18} />
-                </div>
-                <div>
-                  <h3 className="font-semibold">Horário de funcionamento</h3>
-                  <p className="text-xs text-slate-500">Mesmo horário todos os dias (configuração simples para portfólio).</p>
-                </div>
+          <div className="bg-white rounded-3xl border border-purple-200 p-5 shadow-md">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-purple-50 rounded-lg">
+                <Clock size={18} className="text-purple-700" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Horário de funcionamento</h3>
+                <p className="text-xs text-slate-500">Mesmo horário todos os dias.</p>
               </div>
             </div>
 
@@ -259,22 +243,19 @@ export default function ConfigPage() {
             <p className="text-xs text-slate-400 mt-3">Duração mínima do slot: <span className="font-semibold">{SLOT_MINIMO} minutos</span></p>
           </div>
 
-          {/* Bloqueios */}
-          <div className="bg-white rounded-2xl border p-5 shadow-sm">
+          <div className="bg-white rounded-3xl border border-purple-200 p-5 shadow-md">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-white rounded-lg border">
-                  <Ban size={18} />
+                <div className="p-2 bg-purple-50 rounded-lg">
+                  <Ban size={18} className="text-purple-700" />
                 </div>
                 <div>
                   <h3 className="font-semibold">Bloqueios de agenda</h3>
-                  <p className="text-xs text-slate-500">Crie períodos em que não aceita agendamentos.</p>
+                  <p className="text-xs text-slate-500">Crie períodos indisponíveis.</p>
                 </div>
               </div>
 
-              <div>
-                <Button className="rounded-md" onClick={abrirModalBloqueio}>Adicionar bloqueio</Button>
-              </div>
+              <Button className="rounded-md" onClick={abrirModalBloqueio}>Adicionar bloqueio</Button>
             </div>
 
             <div className="space-y-3">
@@ -283,14 +264,12 @@ export default function ConfigPage() {
               ) : (
                 <div className="space-y-2">
                   {bloqueios.map((b) => (
-                    <div key={b.id} className="flex items-center justify-between p-3 border rounded-md">
+                    <div key={b.id} className="flex items-center justify-between p-3 border border-purple-100 rounded-xl">
                       <div className="text-sm">
                         <div className="font-medium">{dayjs(b.data).format("DD/MM/YYYY")}</div>
                         <div className="text-xs text-slate-500">{b.inicio} — {b.fim}</div>
                       </div>
-                      <div>
-                        <Button size="sm" variant="outline" onClick={() => handleRemoverBloqueio(b.id)}>Remover</Button>
-                      </div>
+                      <Button size="sm" variant="outline" onClick={() => handleRemoverBloqueio(b.id)}>Remover</Button>
                     </div>
                   ))}
                 </div>
@@ -300,16 +279,15 @@ export default function ConfigPage() {
 
         </div>
 
-        {/* Right: user + quick info */}
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl border p-5 shadow-sm">
+          <div className="bg-white rounded-3xl border border-purple-200 p-5 shadow-md">
             <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 bg-white rounded-lg border">
-                <User size={18} />
+              <div className="p-2 bg-purple-50 rounded-lg">
+                <User size={18} className="text-purple-700" />
               </div>
               <div>
                 <h4 className="font-semibold">Conta</h4>
-                <p className="text-xs text-slate-500">Informações do usuário conectado.</p>
+                <p className="text-xs text-slate-500">Usuário conectado</p>
               </div>
             </div>
 
@@ -325,14 +303,14 @@ export default function ConfigPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border p-5 shadow-sm">
+          <div className="bg-white rounded-3xl border border-purple-200 p-5 shadow-md">
             <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 bg-white rounded-lg border">
-                <CalendarRange size={18} />
+              <div className="p-2 bg-purple-50 rounded-lg">
+                <CalendarRange size={18} className="text-purple-700" />
               </div>
               <div>
                 <h4 className="font-semibold">Informações rápidas</h4>
-                <p className="text-xs text-slate-500">Resumo das configurações.</p>
+                <p className="text-xs text-slate-500">Resumo das configurações</p>
               </div>
             </div>
 
@@ -356,12 +334,11 @@ export default function ConfigPage() {
         </div>
       </div>
 
-      {/* Modal adicionar bloqueio */}
       <Dialog open={modalOpen} onOpenChange={(o) => !o && fecharModalBloqueio()}>
         <DialogContent className="max-w-md w-full bg-white rounded-2xl border shadow-2xl p-6">
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold">Adicionar bloqueio</DialogTitle>
-            <DialogDescription className="text-sm text-slate-500">Defina o período que ficará indisponível para agendamentos.</DialogDescription>
+            <DialogDescription className="text-sm text-slate-500">Defina o período indisponível.</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4 mt-4">

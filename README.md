@@ -1,36 +1,178 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+📌 Agenda PRO — Sistema de Agendamento e Gestão Básica
 
-## Getting Started
+## 🔑 Acesso de demonstração
+Este projeto possui um usuário de demonstração para facilitar a avaliação:
+Email: demo@agenda-pro.dev  
+Senha: demo123456
 
-First, run the development server:
+Aplicação full-stack desenvolvida como projeto de portfólio, com foco em praticar e demonstrar conceitos de frontend moderno, integração com backend e persistência de dados em tempo real.
 
-```bash
+O sistema simula a rotina de profissionais como cabeleireiros, manicures e prestadores de serviço, incluindo agenda, controle financeiro simples, cadastro de clientes e dashboard.
+
+🚀 Tecnologias utilizadas
+
+Next.js 14 (App Router)
+
+React
+
+TypeScript
+
+TailwindCSS
+
+Shadcn UI
+
+Firebase Authentication
+
+Firestore Database
+
+Recharts
+
+Layout responsivo (desktop e mobile)
+
+🗂️ Funcionalidades implementadas
+📅 Agenda
+
+Grade de horários dinâmica (08h–20h)
+
+Criação de agendamentos com:
+
+Nome
+
+Telefone
+
+Serviço
+
+Duração
+
+Detecção automática de conflito de horários
+
+Edição e exclusão de agendamentos
+
+Marcação de atendimento como concluído
+
+Conclusão gera lançamento financeiro automaticamente
+
+💰 Financeiro
+
+Registro automático de entradas ao concluir serviços
+
+Listagem cronológica
+
+Valores formatados em moeda (BRL)
+
+👥 Clientes
+
+Cadastro automático ao concluir atendimentos
+
+Atualização da última visita
+
+Listagem simples e objetiva
+
+🛠️ Serviços
+
+Cadastro de serviços com:
+
+Nome
+
+Preço
+
+Duração
+
+Utilizados diretamente na agenda e no financeiro
+
+📊 Dashboard
+
+Indicadores rápidos (KPIs)
+
+Total faturado no mês
+
+Número de atendimentos concluídos
+
+Gráfico de faturamento mensal
+
+📱 Responsividade
+
+Sidebar no desktop
+
+Bottom navigation no mobile
+
+Layout focado em usabilidade
+
+## 📸 Screenshots
+
+### Dashboard
+![Dashboard](public/dashboard.png)
+
+### Agenda
+![Agenda](public/agenda.png)
+
+### Clientes
+![Clientes](public/clientes.png)
+
+### Financeiro
+![Financeiro](public/financeiro.png)
+
+### Serviços
+![Serviços](public/servicos.png)
+
+### Configurações
+![Configurações](public/config.png)
+
+🧱 Estrutura do projeto (resumo)
+app/
+ └── (private)/
+      ├── dashboard
+      ├── agenda
+      ├── finances
+      ├── services
+      ├── clientes
+      ├── config
+      └── layout.tsx
+components/
+lib/firebase.ts
+
+🔐 Autenticação
+
+Autenticação feita com Firebase Authentication (Email/Senha).
+As rotas privadas são protegidas por um layout que valida o estado de autenticação do usuário.
+
+🧮 Firestore — Estrutura de dados
+users/{uid}/services/{serviceId}
+users/{uid}/clients/{clientId}
+users/{uid}/appointments/{appointmentId}
+users/{uid}/finances/{financeId}
+
+▶️ Como rodar o projeto localmente
+git clone https://github.com/rogerraccanelli/agenda-pro.git
+cd agenda-pro
+npm install
+
+
+Crie o arquivo .env.local com suas credenciais do Firebase.
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Acesse:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+http://localhost:3000
 
-## Learn More
+🧑‍💻 Observações
 
-To learn more about Next.js, take a look at the following resources:
+Este projeto foi desenvolvido com foco em:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Prática de CRUD real com Firebase
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Gerenciamento de estado assíncrono
 
-## Deploy on Vercel
+Organização de rotas com App Router
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Componentização e reutilização de UI
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Integração entre módulos (agenda → financeiro)
+
+Boas práticas iniciais de projeto frontend
+
+📝 Licença
+
+Uso livre para fins de estudo e portfólio.

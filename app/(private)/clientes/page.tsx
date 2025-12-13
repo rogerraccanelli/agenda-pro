@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   collection,
   addDoc,
@@ -23,20 +23,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { UserPlus, User, Edit2, Trash2 } from "lucide-react";
+import { UserPlus, User, Edit2, Trash2, Search } from "lucide-react";
 import dayjs from "dayjs";
 
 type Client = {
   id: string;
   nome: string;
   telefone?: string;
-  ultimoAtendimento?: any;
-  [k: string]: any;
+  ultimaVisita?: any;
 };
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // busca
+  const [search, setSearch] = useState("");
 
   // modal
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -58,7 +60,12 @@ export default function ClientsPage() {
     }
 
     const uid = auth.currentUser.uid;
-    const q = query(collection(db, "users", uid, "clients"), orderBy("nome"));
+
+    const q = query(
+      collection(db, "users", uid, "clientes"),
+      orderBy("nome")
+    );
+
     const unsub = onSnapshot(q, (snap) => {
       const list: Client[] = [];
       snap.forEach((d) => list.push({ id: d.id, ...(d.data() as any) }));
@@ -89,6 +96,7 @@ export default function ClientsPage() {
   async function handleSalvar() {
     if (!auth.currentUser) return alert("Usuário não autenticado.");
     if (!nome.trim()) return alert("Informe o nome.");
+
     const uid = auth.currentUser.uid;
 
     const payload = {
@@ -99,13 +107,20 @@ export default function ClientsPage() {
 
     try {
       if (editando) {
-        await updateDoc(doc(db, "users", uid, "clients", editando.id), payload);
+        await updateDoc(
+          doc(db, "users", uid, "clientes", editando.id),
+          payload
+        );
       } else {
-        await addDoc(collection(db, "users", uid, "clients"), {
-          ...payload,
-          createdAt: new Date(),
-        });
+        await addDoc(
+          collection(db, "users", uid, "clientes"),
+          {
+            ...payload,
+            criadoEm: new Date(),
+          }
+        );
       }
+
       setDialogOpen(false);
     } catch (err) {
       console.error(err);
@@ -116,38 +131,61 @@ export default function ClientsPage() {
   async function handleExcluir(id: string) {
     if (!confirm("Confirmar exclusão deste cliente?")) return;
     if (!auth.currentUser) return;
+
     try {
       const uid = auth.currentUser.uid;
-      await deleteDoc(doc(db, "users", uid, "clients", id));
+      await deleteDoc(doc(db, "users", uid, "clientes", id));
     } catch (err) {
       console.error(err);
       alert("Erro ao excluir.");
     }
   }
 
+  // clientes filtrados (busca por nome)
+  const filteredClients = useMemo(() => {
+    if (!search.trim()) return clients;
+    const term = search.toLowerCase();
+    return clients.filter((c) =>
+      (c.nome || "").toLowerCase().includes(term)
+    );
+  }, [clients, search]);
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900">Clientes</h1>
-          <p className="text-sm text-slate-500">Lista de clientes do Studio RGS.</p>
+          <p className="text-sm text-slate-500">
+            Lista de clientes do Studio RGS.
+          </p>
         </div>
 
-        <div>
-          <Button onClick={abrirCriar} className="btn-primary flex items-center gap-2">
-            <UserPlus size={16} />
-            Novo cliente
-          </Button>
-        </div>
+        <Button onClick={abrirCriar} className="btn-primary flex items-center gap-2">
+          <UserPlus size={16} />
+          Novo cliente
+        </Button>
+      </div>
+
+      {/* BUSCA */}
+      <div className="relative max-w-md">
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <Input
+          placeholder="Buscar cliente pelo nome"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-9"
+        />
       </div>
 
       {loading ? (
         <div className="text-sm text-slate-500">Carregando...</div>
-      ) : clients.length === 0 ? (
-        <div className="card">Nenhum cliente cadastrado.</div>
+      ) : filteredClients.length === 0 ? (
+        <div className="card">
+          {search ? "Nenhum cliente encontrado." : "Nenhum cliente cadastrado."}
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {clients.map((c) => (
+          {filteredClients.map((c) => (
             <div key={c.id} className="card">
               <div className="flex justify-between items-start gap-3">
                 <div>
@@ -155,23 +193,21 @@ export default function ClientsPage() {
                     <div className="rounded-full bg-[#F3E8FF] text-[#6D28D9] w-9 h-9 flex items-center justify-center">
                       <User size={16} />
                     </div>
-                    <h2 className="text-lg font-semibold text-slate-900">{c.nome}</h2>
+                    <h2 className="text-lg font-semibold text-slate-900">
+                      {c.nome}
+                    </h2>
                   </div>
 
                   <p className="small-muted mt-2">{c.telefone || "—"}</p>
 
                   <p className="text-xs text-slate-400 mt-2">
                     Último atendimento:{" "}
-                    {c.ultimoAtendimento
-                      ? typeof c.ultimoAtendimento?.toDate === "function"
-                        ? dayjs(c.ultimoAtendimento.toDate()).format("DD/MM/YYYY")
-                        : dayjs(c.ultimoAtendimento).format("DD/MM/YYYY")
+                    {c.ultimaVisita
+                      ? typeof c.ultimaVisita?.toDate === "function"
+                        ? dayjs(c.ultimaVisita.toDate()).format("DD/MM/YYYY")
+                        : dayjs(c.ultimaVisita).format("DD/MM/YYYY")
                       : "Nenhum"}
                   </p>
-                </div>
-
-                <div className="flex flex-col items-end gap-2">
-                  <div className="text-sm text-slate-500">{/* espaço para info extra */}</div>
                 </div>
               </div>
 
@@ -196,30 +232,43 @@ export default function ClientsPage() {
         </div>
       )}
 
-      {/* Modal criar / editar cliente */}
       <Dialog open={dialogOpen} onOpenChange={(v) => !v && setDialogOpen(false)}>
         <DialogContent className="w-full max-w-lg bg-white rounded-2xl p-6 modal-fix max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{editando ? "Editar cliente" : "Novo cliente"}</DialogTitle>
+            <DialogTitle>
+              {editando ? "Editar cliente" : "Novo cliente"}
+            </DialogTitle>
             <DialogDescription>
-              {editando ? "Altere os dados e salve." : "Preencha os dados do cliente."}
+              {editando
+                ? "Altere os dados e salve."
+                : "Preencha os dados do cliente."}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-3 mt-4">
             <div>
               <Label htmlFor="nome">Nome</Label>
-              <Input id="nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+              <Input
+                id="nome"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
             </div>
 
             <div>
               <Label htmlFor="telefone">Telefone</Label>
-              <Input id="telefone" value={telefone} onChange={(e) => setTelefone(e.target.value)} />
+              <Input
+                id="telefone"
+                value={telefone}
+                onChange={(e) => setTelefone(e.target.value)}
+              />
             </div>
           </div>
 
           <DialogFooter className="mt-6 flex items-center justify-end gap-2">
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Cancelar
+            </Button>
             <Button className="btn-primary" onClick={handleSalvar}>
               Salvar
             </Button>
