@@ -261,20 +261,24 @@ export default function DashboardPage() {
       </div>
 
       {/* GRÁFICO */}
-      <div className="bg-white rounded-3xl border border-purple-100 shadow-md p-5">
+      <div className="bg-white rounded-3xl border border-purple-100 shadow-md p-5 overflow-x-hidden">
         <h3 className="font-semibold mb-3">Faturamento Últimos 12 meses</h3>
-        <ResponsiveContainer width="100%" height={320}>
-          <ComposedChart data={monthlyFaturamento}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="mes" />
-            <YAxis />
-            <Tooltip formatter={(v: any) => brl(Number(v))} />
-            <Legend />
-            <Bar dataKey="valor" fill="#6D28D9" barSize={32} />
-            <Line dataKey="valor" stroke="#8B5CF6" strokeWidth={2} />
-          </ComposedChart>
-        </ResponsiveContainer>
+
+        <div className="w-full overflow-x-hidden">
+          <ResponsiveContainer width="99%" height={320}>
+            <ComposedChart data={monthlyFaturamento}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="mes" />
+              <YAxis />
+              <Tooltip formatter={(v: any) => brl(Number(v))} />
+              <Legend />
+              <Bar dataKey="valor" fill="#6D28D9" barSize={32} />
+              <Line dataKey="valor" stroke="#8B5CF6" strokeWidth={2} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
       </div>
+
 
       {/* LISTAS */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
