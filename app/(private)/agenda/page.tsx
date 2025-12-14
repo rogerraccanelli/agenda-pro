@@ -496,7 +496,7 @@ export default function AgendaPage() {
   const PRIMARY_TEXT = "text-white";
 
   return (
-    <div className="p-4 md:p-6 space-y-6 overflow-x-hidden overflow-y-auto min-h-full"> // trigger deploy
+    <div className="p-4 md:p-6 space-y-6 overflow-x-hidden overflow-y-auto min-h-full"> 
       {/* header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -504,7 +504,7 @@ export default function AgendaPage() {
           <p className="text-sm text-slate-500">Clique em um horário para criar um agendamento.</p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button className="rounded-md" variant="outline" onClick={() => mudarDia(-1)}>
             ◀ Anterior
           </Button>
@@ -522,7 +522,7 @@ export default function AgendaPage() {
             type="date"
             value={selectedDay}
             onChange={(e) => setSelectedDay(e.target.value)}
-            className="ml-3 p-2 border rounded-md text-sm"
+            className="w-full sm:w-auto ml-0 sm:ml-3 p-2 border rounded-md text-sm"
           />
         </div>
       </div>
