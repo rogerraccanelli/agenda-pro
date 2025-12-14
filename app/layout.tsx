@@ -20,7 +20,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className={`${GeistSans.className} bg-background text-foreground`}>
+      <body
+        className={`${GeistSans.className} bg-background text-foreground`}
+        style={{
+          overscrollBehaviorX: "none",
+          WebkitOverflowScrolling: "touch",
+        }}
+      >
         {children}
       </body>
     </html>
