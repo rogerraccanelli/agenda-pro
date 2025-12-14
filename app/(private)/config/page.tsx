@@ -174,21 +174,24 @@ export default function ConfigPage() {
               <h3 className="font-semibold">Horário de funcionamento</h3>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Abertura</Label>
                 <Input
                   type="time"
+                  className="w-full min-w-0 appearance-none overflow-hidden"
                   value={horarios.abertura}
                   onChange={(e) =>
                     setHorarios((s) => ({ ...s, abertura: e.target.value }))
                   }
                 />
               </div>
+
               <div>
                 <Label>Fechamento</Label>
                 <Input
                   type="time"
+                  className="w-full min-w-0 appearance-none overflow-hidden"
                   value={horarios.fechamento}
                   onChange={(e) =>
                     setHorarios((s) => ({ ...s, fechamento: e.target.value }))
