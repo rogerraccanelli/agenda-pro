@@ -16,8 +16,20 @@ export default function MobileNav() {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-lg md:hidden">
-      <div className="flex justify-around py-2">
+    <nav
+      className="
+        fixed
+        inset-x-0
+        bottom-0
+        z-[100]
+        bg-white
+        border-t
+        shadow-lg
+        md:hidden
+        pb-safe
+      "
+    >
+      <div className="flex justify-around h-16 items-center">
         {items.map((item) => {
           const active = pathname.startsWith(item.href);
           const Icon = item.icon;
@@ -30,7 +42,10 @@ export default function MobileNav() {
                 active ? "text-purple-600 font-semibold" : "text-gray-500"
               }`}
             >
-              <Icon size={20} className={`${active ? "text-purple-600" : "text-gray-500"}`} />
+              <Icon
+                size={22}
+                className={active ? "text-purple-600" : "text-gray-500"}
+              />
               <span className="mt-1">{item.label}</span>
             </Link>
           );

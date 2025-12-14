@@ -168,14 +168,22 @@ export default function ClientsPage() {
 
       {/* BUSCA */}
       <div className="relative max-w-md">
-        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        {!search && (
+          <Search
+            size={16}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+          />
+        )}
+
         <Input
+          type="text"
           placeholder="Buscar cliente pelo nome"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="pl-9"
+          className={search ? "pl-3" : "pl-11"}
         />
       </div>
+
 
       {loading ? (
         <div className="text-sm text-slate-500">Carregando...</div>

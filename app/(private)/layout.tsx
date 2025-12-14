@@ -84,7 +84,7 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
       </aside>
 
       {/* ---------------- MAIN ---------------- */}
-      <main className="flex-1 overflow-y-auto p-6">
+      <main className="flex-1 overflow-y-auto px-0 md:px-6 pb-20 md:pb-0">
         {children}
       </main>
 
