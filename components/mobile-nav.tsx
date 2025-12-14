@@ -22,20 +22,14 @@ export default function MobileNav() {
         bottom-0
         left-0
         right-0
-        z-[9999]
+        z-50
         bg-white
         border-t
-        border-slate-200
         md:hidden
+        pb-[env(safe-area-inset-bottom)]
       "
-      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      {/* IMPORTANTE:
-          - nada de justify-around
-          - largura limitada
-          - padding interno controlado
-      */}
-      <div className="mx-auto flex max-w-md items-center justify-between px-4 h-16">
+      <div className="flex justify-around h-16">
         {items.map((item) => {
           const active = pathname.startsWith(item.href);
           const Icon = item.icon;
@@ -44,21 +38,12 @@ export default function MobileNav() {
             <Link
               key={item.href}
               href={item.href}
-              className="flex flex-col items-center justify-center text-xs flex-1"
+              className={`flex flex-col items-center justify-center text-xs ${
+                active ? "text-purple-600 font-semibold" : "text-gray-500"
+              }`}
             >
-              <Icon
-                size={22}
-                className={active ? "text-purple-600" : "text-slate-400"}
-              />
-              <span
-                className={
-                  active
-                    ? "text-purple-600 font-medium"
-                    : "text-slate-400"
-                }
-              >
-                {item.label}
-              </span>
+              <Icon size={20} />
+              <span className="mt-1">{item.label}</span>
             </Link>
           );
         })}
