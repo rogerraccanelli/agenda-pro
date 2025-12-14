@@ -79,17 +79,10 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
         </aside>
 
         {/* ---------------- CONTENT ---------------- */}
-        <main
-          className="
-            flex-1
-            overflow-y-auto
-            p-4
-            md:p-6
-            pb-[calc(4.5rem+env(safe-area-inset-bottom))]
-          "
-        >
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-28">
           {children}
         </main>
+
       </div>
 
       {/* ---------------- MOBILE NAV (FIXED, IOS SAFE) ---------------- */}

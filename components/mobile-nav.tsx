@@ -18,20 +18,19 @@ export default function MobileNav() {
   return (
     <nav
       className="
-    fixed
-    bottom-0
-    left-0
-    right-0
-    z-50
-    bg-white
-    border-t
-    md:hidden
-    pb-[env(safe-area-inset-bottom)]
-  "
+        fixed
+        bottom-0
+        left-0
+        w-screen
+        z-[9999]
+        bg-white
+        border-t
+        border-slate-200
+        md:hidden
+        pb-[env(safe-area-inset-bottom)]
+      "
     >
-
-
-      <div className="flex justify-around h-16 items-center">
+      <div className="flex justify-around items-center h-16">
         {items.map((item) => {
           const active = pathname.startsWith(item.href);
           const Icon = item.icon;
@@ -40,15 +39,21 @@ export default function MobileNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center text-xs ${
-                active ? "text-purple-600 font-semibold" : "text-gray-500"
-              }`}
+              className="flex flex-col items-center justify-center text-xs"
             >
               <Icon
                 size={22}
-                className={active ? "text-purple-600" : "text-gray-500"}
+                className={active ? "text-purple-600" : "text-slate-400"}
               />
-              <span className="mt-1">{item.label}</span>
+              <span
+                className={
+                  active
+                    ? "text-purple-600 font-medium"
+                    : "text-slate-400"
+                }
+              >
+                {item.label}
+              </span>
             </Link>
           );
         })}

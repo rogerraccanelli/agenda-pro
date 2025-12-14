@@ -205,3 +205,12 @@ body main {
   box-sizing: border-box !important;
   max-width: 100% !important;
 }
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  position: relative;
+}
