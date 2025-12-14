@@ -17,18 +17,17 @@ export default function MobileNav() {
 
   return (
     <nav
-      className="
-        fixed
-        inset-x-0
-        bottom-0
-        z-[100]
-        bg-white
-        border-t
-        shadow-lg
-        md:hidden
-        pb-safe
-      "
-    >
+  className="
+    sticky
+    bottom-0
+    z-50
+    bg-white
+    border-t
+    md:hidden
+    pb-[env(safe-area-inset-bottom)]
+  "
+>
+
       <div className="flex justify-around h-16 items-center">
         {items.map((item) => {
           const active = pathname.startsWith(item.href);
