@@ -21,7 +21,8 @@ export default function MobileNav() {
         fixed
         bottom-0
         left-0
-        w-screen
+        left-0
+        right-0
         z-[9999]
         bg-white
         border-t
