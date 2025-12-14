@@ -214,3 +214,14 @@ body {
 body {
   position: relative;
 }
+/* iOS hard fix */
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+#__next,
+[data-nextjs-scroll-focus-boundary] {
+  width: 100%;
+  overflow-x: hidden;
+}
