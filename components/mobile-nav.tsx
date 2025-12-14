@@ -29,7 +29,7 @@ export default function MobileNav() {
         pb-[env(safe-area-inset-bottom)]
       "
     >
-      <div className="flex justify-around h-16">
+      <div className="flex h-16 items-center justify-between px-4">
         {items.map((item) => {
           const active = pathname.startsWith(item.href);
           const Icon = item.icon;
