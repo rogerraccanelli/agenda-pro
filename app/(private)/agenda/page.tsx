@@ -496,7 +496,7 @@ export default function AgendaPage() {
   const PRIMARY_TEXT = "text-white";
 
   return (
-    <div className="p-4 md:p-6 space-y-6 overflow-x-hidden">
+    <div className="p-4 md:p-6 space-y-6 overflow-x-hidden overflow-y-auto min-h-full"> // trigger deploy
       {/* header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -532,7 +532,7 @@ export default function AgendaPage() {
       </p>
 
       {/* grid */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {slots.map((slot) => {
           const lista = agendamentosPorHorario[slot] || [];
           const ocupado = lista.length > 0;
@@ -550,7 +550,8 @@ export default function AgendaPage() {
                 else abrirModal(slot);
               }}
               role="button"
-              className={`group rounded-3xl border transition-all transform motion-safe:duration-200 motion-safe:ease-out p-4 flex flex-col justify-between cursor-pointer
+              className={`group rounded-3xl border transition-all transform motion-safe:duration-200 motion-safe:ease-out p-4 flex flex-col gap-3 cursor-pointer
+
                 ${ocupado ? (agendamento?.concluido ? "bg-green-50 border-green-100 hover:shadow-lg" : "bg-purple-50 border-purple-100 hover:shadow-lg") : "bg-white hover:shadow-lg"}
                 ${isNow ? "ring-2 ring-[#6D28D9]/20" : ""}`}
             >
