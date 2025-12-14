@@ -17,16 +17,19 @@ export default function MobileNav() {
 
   return (
     <nav
-  className="
-    sticky
+      className="
+    fixed
     bottom-0
+    left-0
+    right-0
     z-50
     bg-white
     border-t
     md:hidden
     pb-[env(safe-area-inset-bottom)]
   "
->
+    >
+
 
       <div className="flex justify-around h-16 items-center">
         {items.map((item) => {
