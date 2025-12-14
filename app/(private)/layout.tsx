@@ -17,7 +17,11 @@ const icons = {
   config: "⚙️",
 };
 
-export default function PrivateLayout({ children }: { children: ReactNode }) {
+export default function PrivateLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -43,8 +47,8 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
   ];
 
   return (
-    <>
-      <div className="flex min-h-screen w-full bg-[#F8F7FC] text-[#1F1B2E]">
+    <div className="min-h-screen bg-[#F8F7FC] text-[#1F1B2E]">
+      <div className="flex min-h-screen w-full">
         {/* SIDEBAR */}
         <aside className="hidden md:flex flex-col w-60 bg-white border-r p-5">
           <div className="font-extrabold text-xl mb-8 text-[#6D28D9]">
@@ -57,7 +61,7 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium",
+                  "flex items-center gap-3 px-4 py-2 rounded-lg text-sm font-medium transition",
                   pathname === item.href
                     ? "bg-[#6D28D9] text-white"
                     : "hover:bg-[#f3f0ff]"
@@ -78,15 +82,13 @@ export default function PrivateLayout({ children }: { children: ReactNode }) {
         </aside>
 
         {/* CONTENT */}
-        <main className="flex-1 p-4 md:p-6 pb-24">
+        <main className="flex-1 px-0 md:px-6 pt-4 pb-24 md:pb-6 overflow-x-hidden">
           {children}
         </main>
       </div>
 
-      {/* MOBILE NAV — FORA DO SCROLL */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50">
-        <MobileNav />
-      </div>
-    </>
+      {/* MOBILE NAV — SEM WRAPPER */}
+      <MobileNav />
+    </div>
   );
 }
